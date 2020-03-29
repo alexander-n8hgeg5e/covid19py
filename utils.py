@@ -1,0 +1,79 @@
+from datetime import date
+from math import e,log,ceil
+from operator import itemgetter
+from collections import OrderedDict
+
+def load_landkreise():
+    with open("landkreise") as f:
+        return eval(f.read())
+
+def load_stadtkreise():
+    with open("stadtkreise") as f:
+        return eval(f.read())
+
+def load_kreise():
+    return load_landkreise() + load_stadtkreise()
+
+class Day20(date):
+    def __new__(self,month,day):
+        return date(2020,month,day)
+
+def k(covid_data):
+    kk=[]
+    l=min(10,len(covid_data))
+    l0=ceil(l/2)
+    for i in range(len(covid_data)-l):
+        days  = ( covid_data[i+l]['Meldedatum'] - covid_data[i]['Meldedatum'] ).days
+        ratio = covid_data[i+l]['AnzahlFall'] / covid_data[i]['AnzahlFall']
+        try:
+            kk.append((covid_data[i]['Meldedatum'].day+l0,(1/days)*log(ratio)))
+        except ValueError as e:
+            if ratio == 0:
+                pass
+            else:
+                print(e)
+    return kk
+
+def get_krit_gt0(altersgruppe,krit_gt0):
+    count=0
+    ret=[]
+    for d in data:
+        if d[krit_gt0] >0 and d['Altersgruppe'] in altersgruppe:
+            count += d[krit_gt0]
+            ret.append(d)
+    return ret,count
+
+def gen_covid19_data(data,landkreis_id):
+    lk_data=[]
+    for d in data:
+        if landkreis_id==d['IdLandkreis']:
+            lk_data.append(d)
+    lk_data.sort(key=itemgetter("Meldedatum"))
+    data=OrderedDict()
+    for d in lk_data:
+        key=d['Meldedatum'].isoformat()
+        if not key in data.keys():
+            data.update({key:{'AnzahlFall':1,'Meldedatum':d['Meldedatum']}})
+        else:
+            data[key]['AnzahlFall']+=d['AnzahlFall']
+    ret=[]
+    for d in data.values():
+        ret.append(d)
+    return ret
+
+def gen_plot_file(data,landkreis_id):
+    with open('plot.data','wt') as f:
+        f.write("\n".join([ str(i)+" "+str(j) for i,j in k(gen_covid19_data(data,landkreis_id=landkreis_id))]))
+
+def gen_plot_data(data,landkreis_id):
+    return [ (i,j) for i,j in k(gen_covid19_data(data,landkreis_id=landkreis_id))]
+
+def gen_plot_data_1(covid_data):
+    return [ (i,j) for i,j in k(covid_data)]
+
+
+
+    
+
+
+# vim: set foldmethod=indent foldlevel=0 :
