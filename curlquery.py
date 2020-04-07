@@ -65,6 +65,9 @@ def curlcmd(landkreis_id = 9162):
     return curlcmd
 
 def curlcmd_1(result_count=2000,objectid_range=None):
+    """
+    the functions name ending "1" doesn't mean anything other than it's another function 
+    """
     if not objectid_range is None:
         objectid_lb = objectid_range[0]
         objectid_hb = objectid_range[-1]
@@ -105,6 +108,9 @@ def curlcmd_1(result_count=2000,objectid_range=None):
     return curlcmd
 
 def get(lk=load_kreise()):
+    """
+    a function related to getting the data
+    """
     data=[]
     for i,j in lk:
         cmd=curlcmd(landkreis_id=i)
@@ -122,6 +128,10 @@ def get(lk=load_kreise()):
     return data
 
 def get_1(curlcmd=curlcmd_1,**curlcmd_kwargs):
+    """
+    the functions name ending "1" doesn't mean anything other than it's another function
+    somwhat related to getting the data  
+    """
     data=[]
     cmd=curlcmd(**curlcmd_kwargs)
     try:
@@ -137,6 +147,9 @@ def get_1(curlcmd=curlcmd_1,**curlcmd_kwargs):
     return data
 
 def get_all(start_object_id=830000):
+    """
+    main "get" function, to pull the data from the database
+    """
     data=[]
     start=start_object_id
     len0count=0
@@ -181,12 +194,19 @@ def load_data():
     return data
 
 def conv_lk_id(data):
+    """
+    converts the landkreis/stadtkreis id to a number datatype
+    """
     for d in data:
         if 'IdLandkreis' in d.keys():
             d['IdLandkreis']=int(d['IdLandkreis'])
     return data
 
 def convtime(data):
+    """
+    Converts the timeformat in the data to a python datatype.
+    This is for easy python time calculations.
+    """
     for d in data:
         if 'Meldedatum' in d.keys():
             tm_year, tm_mon, tm_mday, tm_hour, tm_min,tm_sec, tm_wday, tm_yday, tm_isdst=gmtime(d['Meldedatum']/1000)

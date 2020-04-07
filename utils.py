@@ -31,6 +31,10 @@ class Day20(date):
         return date(2020,month,day)
 
 def k(covid_data):
+    """
+    calculates the konstant \"k\" in f=num_infected^(t*k)
+    (t is in days)
+    """
     kk=[]
     l=min(10,len(covid_data))
     l0=ceil(l/2)
@@ -47,6 +51,11 @@ def k(covid_data):
     return kk
 
 def get_krit_gt0(altersgruppe,krit_gt0):
+    """
+    returns the data and the count of
+    datasets where the "krit"- parameter is greater than zero
+    counted is the parameters count not the number of datasets 
+    """
     count=0
     ret=[]
     for d in data:

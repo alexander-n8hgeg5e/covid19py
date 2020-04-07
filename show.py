@@ -19,6 +19,9 @@ from operator import itemgetter
 from pprint import pprint
 
 def show_all(data,skip=0):
+    """
+    the old show function that is interactive
+    """
     landkreise=load_kreise()
     danger=[]
     count=skip
@@ -37,6 +40,10 @@ def show_all(data,skip=0):
             print(a,b)
 
 def how_dangerous(dataset):
+    """
+    Brain function that judges the data for \"danger\",
+    whereby danger means a detection of a local outbreak.
+    """
     if dataset is None:
         return None
     if not len(dataset) > 1:
@@ -69,6 +76,9 @@ def how_dangerous(dataset):
     return danger
 
 def show_danger(data,skip=0):
+    """
+    new show function
+    """
     landkreise=load_kreise()
     danger=[]
     count=skip
