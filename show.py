@@ -23,7 +23,9 @@ def parse_args():
     a=ArgumentParser()
     a.add_argument("-n","--number-of-list-len",default=15,type=int,help="determines the targeted lenght of the generated list")
     a.add_argument("-p","--offer-plot-popup",default=False,action="store_true",help="offer plot popup")
-    a.add_argument("-m","--danger-min-level",default=3,type=float,help="min dangerousness level (this gets prioritized over the list lenght)")
+    a.add_argument("-m","--danger-min-level",default=2,type=float,help="min dangerousness level (this gets prioritized over the list lenght)")
+    a.add_argument("-ma","--danger-max-level",default=2,type=float,help="max dangerousness level (use in combination with \"-r\",)(this option gets prioritized over the list lenght)")
+    a.add_argument("-r","--reverse",action="store_true",default=False,help="reverse sort order and use the max-level option instead of the min level option")
     return a.parse_args()
 
 def show_all(data,skip=0):
@@ -107,7 +109,7 @@ def get_danger(data,landkreise,skip=0):
             danger.append(dangertuple)
     return danger
 
-def show_danger(data,skip=0,dangerous_min_level=3,len_danger_list=10):
+def show_danger(data,skip=0,dangerous_min_level=3,dangerous_max_level=0,reverse=False,len_danger_list=10):
     """
     new show function
     """
@@ -121,6 +123,7 @@ def show_danger(data,skip=0,dangerous_min_level=3,len_danger_list=10):
         danger_all=[]
         danger_all = get_danger(data,landkreise,skip=skip)
         current_dangerous_min_level=dangerous_min_level
+        current_dangerous_max_level=dangerous_max_level
         while not len_b >= len_danger_list and not no_change_loops > 5:
 
             for d in danger_all:
@@ -130,7 +133,7 @@ def show_danger(data,skip=0,dangerous_min_level=3,len_danger_list=10):
                 if len_b >= len_danger_list:
                     break
                 len_a=len_b
-                if d[-1] >= current_dangerous_min_level:
+                if (d[-1] >= current_dangerous_min_level and not reverse ) or (reverse and d[-1] <= current_dangerous_max_level):
                     lk_ids = [i for i,j,k in danger_ret]
                     if not d[0] in lk_ids:
                         danger_ret.append(d)
@@ -140,11 +143,14 @@ def show_danger(data,skip=0,dangerous_min_level=3,len_danger_list=10):
             if not len_b > len_a:
                 no_change_loops+=1
             # go down in min level in case list needs more entries
-            current_dangerous_min_level = max(current_dangerous_min_level-0.1, dangerous_min_level)
+            if not reverse:
+                current_dangerous_min_level = max(current_dangerous_min_level-0.1, dangerous_min_level)
+            elif reverse:
+                current_dangerous_max_level = min(current_dangerous_max_level+0.1, dangerous_max_level)
 
     finally:
         print("danger lk:")
-        danger_ret.sort(key=itemgetter(2),reverse=True)
+        danger_ret.sort(key=itemgetter(2),reverse=not reverse)
         for a,b,c in danger_ret:
             print("{:5} {:25.25} {:.3f}".format(a,b,c))
             if args.offer_plot_popup:
@@ -156,6 +162,6 @@ def show_danger(data,skip=0,dangerous_min_level=3,len_danger_list=10):
 if __name__=="__main__":
     args=parse_args()
     data=load_data()
-    show_danger(data,len_danger_list=args.number_of_list_len,dangerous_min_level=args.danger_min_level)
+    show_danger(data,len_danger_list=args.number_of_list_len,dangerous_min_level=args.danger_min_level,dangerous_max_level=args.danger_max_level,reverse=args.reverse)
 
 # vim: set foldmethod=indent foldlevel=0 foldnestmax=1 :
