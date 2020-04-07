@@ -75,32 +75,51 @@ def how_dangerous(dataset):
 
     return danger
 
-def show_danger(data,skip=0):
+def get_danger(data,landkreise,skip=0,dangerous_min_level=3,danger=None):
+    if danger is None:
+        danger=[]
+    #print("dangerous_min_level",dangerous_min_level)
+    count=skip
+    for lkid,lk in landkreise[skip:]:
+        count+=1
+        covid_data=gen_covid19_data(data,lkid)
+        pd=gen_plot_data_1(covid_data)
+        dangerous=how_dangerous(pd)
+        if dangerous is None:
+            af=0
+            for i in covid_data:
+                af+=i['AnzahlFall']
+            if af > 70:
+                print()
+                print("failed to evaluate dataset lk="+lk)
+                print("covid_data:")
+                pprint(covid_data)
+                print()
+
+        if not dangerous is None and  dangerous >= dangerous_min_level:
+            dangertuple=(lkid,lk,dangerous)
+            lk_ids_danger=[i for i,j,k in danger]
+            if not lkid in lk_ids_danger:
+                danger.append(dangertuple)
+    return danger
+
+def show_danger(data,skip=0,dangerous_min_level=3,len_danger_list=10):
     """
     new show function
     """
     landkreise=load_kreise()
-    danger=[]
-    count=skip
     try:
-        for lkid,lk in landkreise[skip:]:
-            count+=1
-            covid_data=gen_covid19_data(data,lkid)
-            pd=gen_plot_data_1(covid_data)
-            dangerous=how_dangerous(pd)
-            if dangerous is None:
-                af=0
-                for i in covid_data:
-                    af+=i['AnzahlFall']
-                if af > 70:
-                    print()
-                    print("failed to evaluate dataset lk="+lk)
-                    print("covid_data:")
-                    pprint(covid_data)
-                    print()
+        no_change_loops=0
+        len_b=0
+        danger=[]
+        while not len_b >= len_danger_list and not no_change_loops > 10:
+            len_a=len_b
+            danger=get_danger(data,landkreise,skip=skip,dangerous_min_level=dangerous_min_level,danger=danger)
+            len_b=len(danger)
+            if not len_b > len_a:
+                no_change_loops+=1
+            dangerous_min_level-=0.1
 
-            if not dangerous is None and  dangerous >= 3:
-                danger.append((lkid,lk,dangerous))
     finally:
         print("danger lk:")
         danger.sort(key=itemgetter(2),reverse=True)
