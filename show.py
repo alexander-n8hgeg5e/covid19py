@@ -23,9 +23,10 @@ def parse_args():
     a=ArgumentParser()
     a.add_argument("-n","--number-of-list-len",default=15,type=int,help="determines the targeted lenght of the generated list")
     a.add_argument("-p","--offer-plot-popup",default=False,action="store_true",help="offer plot popup")
-    a.add_argument("-m","--danger-min-level",default=2,type=float,help="min dangerousness level (this gets prioritized over the list lenght)")
+    a.add_argument("-m","--danger-min-level",default=3,type=float,help="min dangerousness level (this gets prioritized over the list lenght)")
     a.add_argument("-ma","--danger-max-level",default=2,type=float,help="max dangerousness level (use in combination with \"-r\",)(this option gets prioritized over the list lenght)")
     a.add_argument("-r","--reverse",action="store_true",default=False,help="reverse sort order and use the max-level option instead of the min level option")
+    a.add_argument("-f","--print-faelle",action="store_true",default=False)
     return a.parse_args()
 
 def show_all(data,skip=0):
@@ -127,9 +128,14 @@ def show_danger(data,skip=0,dangerous_min_level=3,dangerous_max_level=0,reverse=
         # get danger data
         danger_all=[]
         danger_all = get_danger(data,landkreise,skip=skip)
-        current_dangerous_min_level=dangerous_min_level
-        current_dangerous_max_level=dangerous_max_level
-        while not len_b >= len_danger_list and not no_change_loops > 5:
+        max_d=max([c for a,b,c in danger_all])
+        min_d=min([c for a,b,c in danger_all])
+        current_dangerous_min_level=max_d
+        current_dangerous_max_level=min_d
+        print(max_d,min_d)
+        while not len_b >= len_danger_list and not \
+                ((not reverse and current_dangerous_min_level <= min_d ) or (reverse and current_dangerous_max_level >= max_d)):
+            print(current_dangerous_min_level,current_dangerous_max_level)
 
             for d in danger_all:
 
@@ -156,7 +162,14 @@ def show_danger(data,skip=0,dangerous_min_level=3,dangerous_max_level=0,reverse=
         print("danger lk:",file=stderr)
         danger_ret.sort(key=itemgetter(2),reverse=not reverse)
         for a,b,c in danger_ret:
-            print("{:5} {:25.25} {:.3f}".format(a,b,c))
+            if args.print_faelle:
+                covid_data=gen_covid19_data(data,a)
+                af=0
+                for i in covid_data:
+                    af+=i['AnzahlFall']
+                print("{:5} {:25.25} {:.3f} {:5}".format(a,b,c,af))
+            else:
+                print("{:5} {:25.25} {:.3f}".format(a,b,c))
             if args.offer_plot_popup:
                 inp=input("Show plot ? (y/n):")
                 if inp=="y":
