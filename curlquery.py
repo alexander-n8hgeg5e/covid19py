@@ -1,11 +1,20 @@
 #!/usr/bin/env python3
 
+# append current dir to include path
+from os import getcwd
+from os.path import dirname,sep as psep,normpath,isabs
+from sys import path,argv,exit
+if not isabs(argv[0]):
+    p=getcwd()+psep+argv[0]
+else:
+    p=argv[0]
+include_parent=normpath(psep.join(normpath(p).split(psep)[:-2]))
+path.append(include_parent)
+
+from covid19py.utils import *
 from urllib.parse import quote,unquote
 from time import gmtime
 from datetime import datetime
-from sys import path
-path.append("/var/src")
-from covid19py.utils import *
 from subprocess import check_output,DEVNULL,PIPE
 from json import loads
 from os.path import exists

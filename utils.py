@@ -3,12 +3,24 @@ from math import e,log,ceil
 from operator import itemgetter
 from collections import OrderedDict
 
+# append current dir to include path
+from os import getcwd
+from os.path import dirname,sep as psep,normpath,isabs
+from sys import path,argv,exit
+if not isabs(argv[0]):
+    p=getcwd()+psep+argv[0]
+else:
+    p=argv[0]
+module_path = normpath(dirname(p))
+include_parent=normpath(psep.join(normpath(module_path).split(psep)[:-1]))
+path.append(include_parent)
+
 def load_landkreise():
-    with open("landkreise") as f:
+    with open(module_path+psep+"landkreise") as f:
         return eval(f.read())
 
 def load_stadtkreise():
-    with open("stadtkreise") as f:
+    with open(module_path+psep+"stadtkreise") as f:
         return eval(f.read())
 
 def load_kreise():

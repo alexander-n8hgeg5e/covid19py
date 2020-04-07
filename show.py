@@ -1,6 +1,17 @@
 #!/usr/bin/env python3
-from sys import path
-path.append("..")
+
+# append current dir to include path
+from os import getcwd
+from os.path import dirname,sep as psep,normpath,isabs
+from sys import path,argv,exit
+if not isabs(argv[0]):
+    p=getcwd()+psep+argv[0]
+else:
+    p=argv[0]
+module_path = normpath(dirname(p))
+include_parent=normpath(psep.join(normpath(module_path).split(psep)[:-1]))
+path.append(include_parent)
+
 from covid19py.utils import *
 from covid19py.curlquery import *
 from subprocess import check_call,call
