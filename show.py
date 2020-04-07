@@ -137,4 +137,4 @@ if __name__=="__main__":
     data=load_data()
     show_danger(data,len_danger_list=args.number_of_list_len)
 
-# vim: set foldmethod=indent foldlevel=0 :
+# vim: set foldmethod=indent foldlevel=0 foldnestmax=1 :

@@ -35,6 +35,7 @@ def k(covid_data):
     calculates the konstant \"k\" in f=num_infected^(t*k)
     (t is in days)
     """
+    # TODO: check the time range part of this function
     kk=[]
     l=min(10,len(covid_data))
     l0=ceil(l/2)
@@ -97,4 +98,4 @@ def gen_plot_data_1(covid_data):
     
 
 
-# vim: set foldmethod=indent foldlevel=0 :
+# vim: set foldmethod=indent foldlevel=0 foldnestmax=1 :

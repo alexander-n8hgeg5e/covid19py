@@ -213,4 +213,4 @@ def convtime(data):
             d['Meldedatum']=datetime(tm_year,tm_mon,tm_mday,tm_hour,tm_min,tm_sec)
     return data
 
-# vim: set foldmethod=indent foldlevel=0 :
+# vim: set foldmethod=indent foldlevel=0 foldnestmax=1 :
