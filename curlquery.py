@@ -126,6 +126,7 @@ def get_1(curlcmd=curlcmd_1,**curlcmd_kwargs):
     cmd=curlcmd(**curlcmd_kwargs)
     try:
         outp=check_output(cmd)
+        print(outp)
         d=loads(outp)['features']
         for thing in d:
             data.append(thing['attributes'])
