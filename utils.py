@@ -27,6 +27,10 @@ def load_kreise():
     return load_landkreise() + load_stadtkreise()
 
 class Day20(date):
+    """
+    A date in the year 2020.
+    Create one with: \"Day_20(month,year)\"
+    """
     def __new__(self,month,day):
         return date(2020,month,day)
 
