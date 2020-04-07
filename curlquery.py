@@ -136,19 +136,27 @@ def get_1(curlcmd=curlcmd_1,**curlcmd_kwargs):
         raise
     return data
 
-def get_all(start_object_id=670153):
+def get_all(start_object_id=830000):
     data=[]
     start=start_object_id
     len0count=0
+    started=False
     i=0
     try:
-        while len0count < 5:
-            d=get_1(curlcmd=curlcmd_1,objectid_range=range(start+(i*2000),start+((i+1)*2000)))
+        while not started or len0count < 5:
+            r=range(start+(i*2000),start+((i+1)*2000))
+            d=get_1(curlcmd=curlcmd_1,objectid_range=r)
             i+=1
             l=len(d)
-            print("fetching part len="+str(l))
-            if l==0:
+            if not started:
+                print("searching beginning of data ...")
+            else:
+                print("fetching part len="+str(l))
+            if l==0 and started:
                 len0count+=1
+            elif l>0 and not started:
+                print("found start at range:"+str(r))
+                started=True
             data+=d
     except:
         raise
