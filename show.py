@@ -132,10 +132,8 @@ def show_danger(data,skip=0,dangerous_min_level=3,dangerous_max_level=0,reverse=
         min_d=min([c for a,b,c in danger_all])
         current_dangerous_min_level=max_d
         current_dangerous_max_level=min_d
-        print(max_d,min_d)
         while not len_b >= len_danger_list and not \
                 ((not reverse and current_dangerous_min_level <= min_d ) or (reverse and current_dangerous_max_level >= max_d)):
-            print(current_dangerous_min_level,current_dangerous_max_level)
 
             for d in danger_all:
 
@@ -149,14 +147,18 @@ def show_danger(data,skip=0,dangerous_min_level=3,dangerous_max_level=0,reverse=
                         danger_ret.append(d)
                         len_b=len(danger_ret)
             
-            # in case the for loop added nothing
-            if not len_b > len_a:
-                no_change_loops+=1
             # go down in min level in case list needs more entries
             if not reverse:
                 current_dangerous_min_level = max(current_dangerous_min_level-0.1, dangerous_min_level)
             elif reverse:
                 current_dangerous_max_level = min(current_dangerous_max_level+0.1, dangerous_max_level)
+            # in case the for loop would add nothing
+            if not len_b > len_a:
+                if (not reverse and dangerous_min_level == current_dangerous_min_level) or (reverse and dangerous_man_level == current_dangerous_max_level):
+                    # TODO fix this here
+                    print("WARNING: set min lower or max higher to get a full list")
+                    break
+                
 
     finally:
         print("danger lk:",file=stderr)
