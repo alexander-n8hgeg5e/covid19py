@@ -3,7 +3,7 @@
 # append current dir to include path
 from os import getcwd
 from os.path import dirname,sep as psep,normpath,isabs
-from sys import path,argv,exit
+from sys import path,argv,exit,stderr
 if not isabs(argv[0]):
     p=getcwd()+psep+argv[0]
 else:
@@ -45,7 +45,7 @@ def show_all(data,skip=0):
             if inp=="Y":
                 danger.append((lkid,lk))
     finally:
-        print("danger lk:")
+        print("danger lk:",file=stderr)
         for a,b in danger:
             print(a,b)
 
@@ -98,11 +98,11 @@ def get_danger(data,landkreise,skip=0):
             for i in covid_data:
                 af+=i['AnzahlFall']
             if af > 70:
-                print()
-                print("failed to evaluate dataset lk="+lk)
-                print("covid_data:")
-                pprint(covid_data)
-                print()
+                print(file=stderr)
+                print("failed to evaluate dataset lk="+lk,file=stderr)
+                print("covid_data:",file=stderr)
+                pprint(covid_data,file=stderr)
+                print(file=stderr)
 
         dangertuple=(lkid,lk,dangerous)
         if not dangerous is None:
@@ -128,7 +128,6 @@ def show_danger(data,skip=0,dangerous_min_level=3,dangerous_max_level=0,reverse=
 
             for d in danger_all:
 
-                print(d)
                 # break for loop if reached len
                 if len_b >= len_danger_list:
                     break
@@ -149,7 +148,7 @@ def show_danger(data,skip=0,dangerous_min_level=3,dangerous_max_level=0,reverse=
                 current_dangerous_max_level = min(current_dangerous_max_level+0.1, dangerous_max_level)
 
     finally:
-        print("danger lk:")
+        print("danger lk:",file=stderr)
         danger_ret.sort(key=itemgetter(2),reverse=not reverse)
         for a,b,c in danger_ret:
             print("{:5} {:25.25} {:.3f}".format(a,b,c))

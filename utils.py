@@ -6,7 +6,7 @@ from collections import OrderedDict
 # append current dir to include path
 from os import getcwd
 from os.path import dirname,sep as psep,normpath,isabs
-from sys import path,argv,exit
+from sys import path,argv,exit,stderr
 if not isabs(argv[0]):
     p=getcwd()+psep+argv[0]
 else:
@@ -48,7 +48,7 @@ def k(covid_data):
             if ratio == 0:
                 pass
             else:
-                print(e)
+                print(e,file=stderr)
     return kk
 
 def get_krit_gt0(altersgruppe,krit_gt0):
