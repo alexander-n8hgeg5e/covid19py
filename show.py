@@ -58,7 +58,12 @@ def how_dangerous(dataset):
         return None
     if not len(dataset) > 1:
         return None
-    avg=sum(b for a,b in dataset)/len(dataset)
+
+    # don't use old data
+    use_history_len=min(len(dataset),20)
+
+    avg=sum(b for a,b in dataset[use_history_len:])/use_history_len
+
     if (dataset[-1][-1] * 0.9) > dataset[-2][-1]:
         trend="up"
     elif (dataset[-1][-1] * 1.1) < dataset [-2][-1]:
@@ -80,8 +85,8 @@ def how_dangerous(dataset):
     if avg_trend == "up"   : danger+=1
     if avg_trend == "down" : danger-=1
 
-    danger+= max(dataset[-1][-1]-0.1,0)*10
     danger+= max(avg-0.1,0)*10
+    danger+= max(dataset[-1][-1]-0.1,0)*10
 
     return danger
 
