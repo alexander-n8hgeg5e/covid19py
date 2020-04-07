@@ -17,6 +17,12 @@ from covid19py.curlquery import *
 from subprocess import check_call,call
 from operator import itemgetter
 from pprint import pprint
+from argparse import ArgumentParser
+
+def parse_args():
+    a=ArgumentParser()
+    a.add_argument("-n","--number-of-list-len",default=15,type=int,help="determines the targeted lenght of the generated list")
+    return a.parse_args()
 
 def show_all(data,skip=0):
     """
@@ -127,7 +133,8 @@ def show_danger(data,skip=0,dangerous_min_level=3,len_danger_list=10):
             print("{:5} {:25.25} {:.3f}".format(a,b,c))
 
 if __name__=="__main__":
+    args=parse_args()
     data=load_data()
-    show_danger(data)
+    show_danger(data,len_danger_list=args.number_of_list_len)
 
 # vim: set foldmethod=indent foldlevel=0 :
