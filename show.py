@@ -22,6 +22,8 @@ from argparse import ArgumentParser
 def parse_args():
     a=ArgumentParser()
     a.add_argument("-n","--number-of-list-len",default=15,type=int,help="determines the targeted lenght of the generated list")
+    a.add_argument("-p","--offer-plot-popup",default=False,action="store_true",help="offer plot popup")
+    a.add_argument("-m","--danger-min-level",default=3,type=float,help="min dangerousness level (this gets prioritized over the list lenght)")
     return a.parse_args()
 
 def show_all(data,skip=0):
@@ -118,19 +120,29 @@ def show_danger(data,skip=0,dangerous_min_level=3,len_danger_list=10):
         no_change_loops=0
         len_b=0
         danger=[]
-        while not len_b >= len_danger_list and not no_change_loops > 10:
+        while not len_b >= len_danger_list and not no_change_loops > 5:
             len_a=len_b
             danger=get_danger(data,landkreise,skip=skip,dangerous_min_level=dangerous_min_level,danger=danger)
             len_b=len(danger)
             if not len_b > len_a:
                 no_change_loops+=1
-            dangerous_min_level-=0.1
+            dangerous_min_level=max(dangerous_min_level-0.1,args.danger_min_level)
+        #TODO: fix this ugly removal thing  
+        if len(danger) >= len_danger_list:
+            danger=danger[:len_danger_list]
+        while not danger[-1][-1] >= dangerous_min_level:
+            danger.pop(-1)
 
     finally:
         print("danger lk:")
         danger.sort(key=itemgetter(2),reverse=True)
         for a,b,c in danger:
             print("{:5} {:25.25} {:.3f}".format(a,b,c))
+            if args.offer_plot_popup:
+                inp=input("Show plot ? (y/n):")
+                if inp=="y":
+                    gen_plot_file(data,a)
+                    call(['gnuplot','-p','plot.gnuplot'])
 
 if __name__=="__main__":
     args=parse_args()
