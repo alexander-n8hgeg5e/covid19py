@@ -83,10 +83,8 @@ def how_dangerous(dataset):
 
     return danger
 
-def get_danger(data,landkreise,skip=0,dangerous_min_level=3,danger=None):
-    if danger is None:
-        danger=[]
-    #print("dangerous_min_level",dangerous_min_level)
+def get_danger(data,landkreise,skip=0):
+    danger=[]
     count=skip
     for lkid,lk in landkreise[skip:]:
         count+=1
@@ -104,11 +102,9 @@ def get_danger(data,landkreise,skip=0,dangerous_min_level=3,danger=None):
                 pprint(covid_data)
                 print()
 
-        if not dangerous is None and  dangerous >= dangerous_min_level:
-            dangertuple=(lkid,lk,dangerous)
-            lk_ids_danger=[i for i,j,k in danger]
-            if not lkid in lk_ids_danger:
-                danger.append(dangertuple)
+        dangertuple=(lkid,lk,dangerous)
+        if not dangerous is None:
+            danger.append(dangertuple)
     return danger
 
 def show_danger(data,skip=0,dangerous_min_level=3,len_danger_list=10):
@@ -119,24 +115,37 @@ def show_danger(data,skip=0,dangerous_min_level=3,len_danger_list=10):
     try:
         no_change_loops=0
         len_b=0
-        danger=[]
+        danger_ret=[]
+
+        # get danger data
+        danger_all=[]
+        danger_all = get_danger(data,landkreise,skip=skip)
+        current_dangerous_min_level=dangerous_min_level
         while not len_b >= len_danger_list and not no_change_loops > 5:
-            len_a=len_b
-            danger=get_danger(data,landkreise,skip=skip,dangerous_min_level=dangerous_min_level,danger=danger)
-            len_b=len(danger)
+
+            for d in danger_all:
+
+                print(d)
+                # break for loop if reached len
+                if len_b >= len_danger_list:
+                    break
+                len_a=len_b
+                if d[-1] >= current_dangerous_min_level:
+                    lk_ids = [i for i,j,k in danger_ret]
+                    if not d[0] in lk_ids:
+                        danger_ret.append(d)
+                        len_b=len(danger_ret)
+            
+            # in case the for loop added nothing
             if not len_b > len_a:
                 no_change_loops+=1
-            dangerous_min_level=max(dangerous_min_level-0.1,args.danger_min_level)
-        #TODO: fix this ugly removal thing  
-        if len(danger) >= len_danger_list:
-            danger=danger[:len_danger_list]
-        while not danger[-1][-1] >= dangerous_min_level:
-            danger.pop(-1)
+            # go down in min level in case list needs more entries
+            current_dangerous_min_level = max(current_dangerous_min_level-0.1, dangerous_min_level)
 
     finally:
         print("danger lk:")
-        danger.sort(key=itemgetter(2),reverse=True)
-        for a,b,c in danger:
+        danger_ret.sort(key=itemgetter(2),reverse=True)
+        for a,b,c in danger_ret:
             print("{:5} {:25.25} {:.3f}".format(a,b,c))
             if args.offer_plot_popup:
                 inp=input("Show plot ? (y/n):")
@@ -147,6 +156,6 @@ def show_danger(data,skip=0,dangerous_min_level=3,len_danger_list=10):
 if __name__=="__main__":
     args=parse_args()
     data=load_data()
-    show_danger(data,len_danger_list=args.number_of_list_len)
+    show_danger(data,len_danger_list=args.number_of_list_len,dangerous_min_level=args.danger_min_level)
 
 # vim: set foldmethod=indent foldlevel=0 foldnestmax=1 :
