@@ -146,7 +146,7 @@ def get_1(curlcmd=curlcmd_1,**curlcmd_kwargs):
         raise
     return data
 
-def get_all(start_object_id=830000):
+def get_all(start_object_id=1400*1000):
     """
     main "get" function, to pull the data from the database
     """

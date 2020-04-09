@@ -1,3 +1,5 @@
+program is outdated
+
 The program generates a list like
 the one following.
 The rating of the danger is based
